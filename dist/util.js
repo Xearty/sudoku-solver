@@ -28,7 +28,7 @@ function displayBoard(board, initialCells) {
                 boardStr += "" + bright + digitColor + board[row][col] + resetColor;
             boardStr += ' ';
         }
-        boardStr += '|\n';
+        boardStr += '│\n';
     }
     boardStr += '╰───────┴───────┴───────╯';
     console.log(boardStr);
