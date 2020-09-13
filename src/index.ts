@@ -1,19 +1,8 @@
 import solve from './solver';
-import { copy } from './util';
+import { parseBoard } from './util';
 
-const board: number[][] = [
-    [ 8, 7, 0,   0, 0, 0,   6, 0, 0 ],
-    [ 2, 5, 0,   9, 0, 7,   0, 0, 0 ],
-    [ 0, 0, 4,   0, 1, 0,   0, 0, 7 ],
-
-    [ 0, 8, 0,   1, 0, 5,   0, 3, 0 ],
-    [ 0, 0, 2,   0, 8, 0,   7, 0, 0 ],
-    [ 0, 4, 0,   6, 0, 2,   0, 9, 0 ],
-
-    [ 3, 0, 0,   0, 5, 0,   1, 0, 0 ],
-    [ 0, 0, 0,   4, 0, 1,   0, 6, 8 ],
-    [ 0, 0, 5,   0, 0, 0,   0, 7, 3 ],
-];
-
-solve(copy(board));
+if (process.argv[2])
+    solve(parseBoard(process.argv[2]));
+else
+    console.log('A board was not provided!');
 
