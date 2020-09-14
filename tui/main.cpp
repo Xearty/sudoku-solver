@@ -10,15 +10,21 @@
 #define FIRST_VERTICAL_CELL 1
 #define LAST_VERTICAL_CELL 12
 
-void draw_board();
-void draw_top_line();
-void draw_number_line();
-void draw_middle_line();
-void draw_bottom_line();
-std::string stringify_board();
+inline void draw_board();
+inline void draw_top_line();
+inline void draw_number_line();
+inline void draw_middle_line();
+inline void draw_bottom_line();
 inline void draw_in_between_horizontal_line();
 inline void draw_three_number_lines();
 inline void print_three_empty_cells();
+inline void move_left(int curr_y, int curr_x);
+inline void move_right(int curr_y, int curr_x);
+inline void move_down(int curr_y, int curr_x);
+inline void move_up(int curr_y, int curr_x);
+inline void clear_cell();
+inline void write_number(char ch);
+std::string stringify_board();
 
 int main(int argc, char **argv) {
     int ch;
@@ -36,7 +42,7 @@ int main(int argc, char **argv) {
     keypad(stdscr, TRUE);
     noecho();
 
-    move(1, 2);
+    move(FIRST_VERTICAL_CELL, FIRST_HORIZONTAL_CELL);
 
     while (ch != KEY_ENTER) {
         ch = toupper(getch());
@@ -47,60 +53,25 @@ int main(int argc, char **argv) {
             break;
 
         } else if (ch == 'H' || ch == KEY_LEFT) {
-            int steps = 2;
-            if (mvinch(y, x - steps) == ACS_VLINE)
-                steps += 2;
-
-            move(y, x);
-
-            int new_x = x - steps;
-            if (new_x >= 2)
-                move(y, new_x);
+            move_left(y, x);
 
         } else if (ch == 'L' || ch == KEY_RIGHT) {
-            int steps = 2;
-            if (mvinch(y, x + steps) == ACS_VLINE)
-                steps += 2;
-
-            move(y, x);
-
-            int new_x = x + steps;
-            if (new_x <= LAST_HORIZONTAL_CELL)
-                move(y, new_x);
+            move_right(y, x);
 
         } else if (ch == 'J' || ch == KEY_DOWN) {
-            int steps = 1;
-            if (mvinch(y + steps, x) == ACS_HLINE)
-                steps += 1;
-
-            move(y, x);
-
-            int new_y = y + steps;
-            if (new_y <= LAST_VERTICAL_CELL)
-                move(new_y, x);
+            move_down(y, x);
 
         } else if (ch == 'K' || ch == KEY_UP) {
-            int steps = 1;
-            if (mvinch(y - steps, x) == ACS_HLINE)
-                steps += 1;
+            move_up(y, x);
 
+        } else if (ch >= '1' && ch <= '9') {
+            write_number(ch);
             move(y, x);
 
-            int new_y = y - steps;
-            if (new_y >= FIRST_VERTICAL_CELL)
-                move(new_y, x);
-
-        } else if (ch >= '0' && ch <= '9') {
-            if (ch == '0') {
-                attron(COLOR_PAIR(EMPTY_COLOR_PAIR));
-                addch(ACS_BULLET);
-                attroff(COLOR_PAIR(EMPTY_COLOR_PAIR));
-            } else {
-                attron(COLOR_PAIR(NOT_EMPTY_COLOR_PAIR));
-                addch(ch);
-                attroff(COLOR_PAIR(NOT_EMPTY_COLOR_PAIR));
-            }
+        } else if (ch == '0' || ch == 'X') {
+            clear_cell();
             move(y, x);
+
         } else if (ch == 'Q') {
             endwin();
             return 0;
@@ -121,7 +92,7 @@ int main(int argc, char **argv) {
 
 std::string stringify_board() {
     std::string board_str = "";
-    move(1, 2);
+    move(FIRST_VERTICAL_CELL, FIRST_HORIZONTAL_CELL);
     int y, x;
 
     while (y <= LAST_VERTICAL_CELL) {
@@ -130,13 +101,13 @@ std::string stringify_board() {
 
         // q is horizontal line
         // ~ is a bullet
-        if (ch >= '0' && ch <= '9' || ch == '~')
+        if (ch >= '1' && ch <= '9' || ch == '~')
             board_str += ch == '~' ? '0' : ch;
 
         if (x + 2 <= LAST_HORIZONTAL_CELL) {
             move(y, x + 2);
         } else {
-            move(y + 1, 2);
+            move(y + 1, FIRST_HORIZONTAL_CELL);
             if (ch != 'q')
                 board_str += ',';
         }
@@ -145,7 +116,67 @@ std::string stringify_board() {
     return board_str;
 }
 
-void draw_board() {
+inline void clear_cell() {
+    attron(COLOR_PAIR(EMPTY_COLOR_PAIR));
+    addch(ACS_BULLET);
+    attroff(COLOR_PAIR(EMPTY_COLOR_PAIR));
+}
+
+inline void write_number(char ch) {
+    attron(COLOR_PAIR(NOT_EMPTY_COLOR_PAIR));
+    addch(ch);
+    attroff(COLOR_PAIR(NOT_EMPTY_COLOR_PAIR));
+}
+
+inline void move_left(int curr_y, int curr_x) {
+    int steps = 2;
+    if (mvinch(curr_y, curr_x - steps) == ACS_VLINE)
+        steps += 2;
+
+    move(curr_y, curr_x);
+
+    int new_x = curr_x - steps;
+    if (new_x >= 2)
+        move(curr_y, new_x);
+}
+
+inline void move_right(int curr_y, int curr_x) {
+    int steps = 2;
+    if (mvinch(curr_y, curr_x + steps) == ACS_VLINE)
+        steps += 2;
+
+    move(curr_y, curr_x);
+
+    int new_x = curr_x + steps;
+    if (new_x <= LAST_HORIZONTAL_CELL)
+        move(curr_y, new_x);
+}
+
+inline void move_down(int curr_y, int curr_x) {
+    int steps = 1;
+    if (mvinch(curr_y + steps, curr_x) == ACS_HLINE)
+        steps += 1;
+
+    move(curr_y, curr_x);
+
+    int new_y = curr_y + steps;
+    if (new_y <= LAST_VERTICAL_CELL)
+        move(new_y, curr_x);
+}
+
+inline void move_up(int curr_y, int curr_x) {
+    int steps = 1;
+    if (mvinch(curr_y - steps, curr_x) == ACS_HLINE)
+        steps += 1;
+
+    move(curr_y, curr_x);
+
+    int new_y = curr_y - steps;
+    if (new_y >= FIRST_VERTICAL_CELL)
+        move(new_y, curr_x);
+}
+
+inline void draw_board() {
     draw_top_line();
     draw_three_number_lines();
     draw_middle_line();
@@ -157,7 +188,7 @@ void draw_board() {
     refresh();
 }
 
-void draw_top_line() {
+inline void draw_top_line() {
     addch(ACS_ULCORNER);
     draw_in_between_horizontal_line();
     addch(ACS_TTEE);
@@ -168,7 +199,7 @@ void draw_top_line() {
     addch('\n');
 }
 
-void draw_number_line() {
+inline void draw_number_line() {
     addch(ACS_VLINE);
     print_three_empty_cells();
     addch(ACS_VLINE);
@@ -179,7 +210,7 @@ void draw_number_line() {
     addch('\n');
 }
 
-void draw_middle_line() {
+inline void draw_middle_line() {
     addch(ACS_LTEE);
     draw_in_between_horizontal_line();
     addch(ACS_PLUS);
@@ -190,7 +221,7 @@ void draw_middle_line() {
     addch('\n');
 }
 
-void draw_bottom_line() {
+inline void draw_bottom_line() {
     addch(ACS_LLCORNER);
     draw_in_between_horizontal_line();
     addch(ACS_BTEE);
