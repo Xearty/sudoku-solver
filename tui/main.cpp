@@ -78,13 +78,14 @@ int main(int argc, char **argv) {
         }
     }
 
-    endwin();
 
     std::string board = stringify_board();
     std::string path_to_solver = "./dist/index.js";
-
     std::stringstream cmd;
     cmd << "node " << path_to_solver << " " << board;
+
+    endwin();
+
     system(cmd.str().c_str());
 
     return 0;

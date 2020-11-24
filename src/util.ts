@@ -12,7 +12,7 @@
 // │ 6 6 6 │ 7 7 7 │ 8 8 8 │
 // ╰───────┴───────┴───────╯
 
-export function displayBoard(board: number[][], initialCells: boolean[][]): void {
+export function displayBoard(board: number[][], initialCells: boolean[][] = []): void {
     const digitColor = '\x1b[31m';
     const resetColor = '\x1b[0m';
     const bright = '\x1b[1m';

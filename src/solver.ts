@@ -1,4 +1,4 @@
-import { displayBoard } from './util';
+import { displayBoard, copy } from './util';
 
 // sectors
 // ╭───────┬───────┬───────╮
@@ -76,7 +76,28 @@ function makeMove(board: number[][], position: Coords, value: number): boolean {
     return isValid;
 }
 
-function getInitialCells(board: number[][]) {
+function boardIsValid(board: number[][]): boolean {
+    const cpyBoard = copy(board);
+
+    for (let row = 0; row < cpyBoard.length; row++) {
+        for (let col = 0; col < cpyBoard.length; col++) {
+            const cellValue = cpyBoard[row][col];
+            if (!cellValue)
+                continue;
+
+            cpyBoard[row][col] = 0;
+
+            if (!isValidMove(cpyBoard, { row, col }, cellValue)) {
+                return false;
+            }
+
+            cpyBoard[row][col] = cellValue;
+        }
+    }
+    return true;
+}
+
+function getInitialCells(board: number[][]): boolean[][] {
     const result: boolean[][] = new Array<boolean[]>(board.length)
         .fill([])
         .map(() => new Array<boolean>(board.length).fill(false));
@@ -130,6 +151,11 @@ function printSolutions(board: number[][], initialCells: boolean[][], row = 0, c
 }
 
 export default function solve(board: number[][]): void {
+    if (!boardIsValid(board)) {
+        console.log('There are no solutions to this board!');
+        return;
+    }
+
     const initialCells = getInitialCells(board);
     printSolutions(board, initialCells);
 }

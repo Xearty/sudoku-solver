@@ -44,6 +44,22 @@ function makeMove(board, position, value) {
         board[row][col] = value;
     return isValid;
 }
+function boardIsValid(board) {
+    var cpyBoard = util_1.copy(board);
+    for (var row = 0; row < cpyBoard.length; row++) {
+        for (var col = 0; col < cpyBoard.length; col++) {
+            var cellValue = cpyBoard[row][col];
+            if (!cellValue)
+                continue;
+            cpyBoard[row][col] = 0;
+            if (!isValidMove(cpyBoard, { row: row, col: col }, cellValue)) {
+                return false;
+            }
+            cpyBoard[row][col] = cellValue;
+        }
+    }
+    return true;
+}
 function getInitialCells(board) {
     var result = new Array(board.length)
         .fill([])
@@ -89,6 +105,10 @@ function printSolutions(board, initialCells, row, col) {
     }
 }
 function solve(board) {
+    if (!boardIsValid(board)) {
+        console.log('There are no solutions to this board!');
+        return;
+    }
     var initialCells = getInitialCells(board);
     printSolutions(board, initialCells);
 }

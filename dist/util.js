@@ -9,6 +9,7 @@ var __spreadArrays = (this && this.__spreadArrays) || function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.parseBoard = exports.copy = exports.displayBoard = void 0;
 function displayBoard(board, initialCells) {
+    if (initialCells === void 0) { initialCells = []; }
     var digitColor = '\x1b[31m';
     var resetColor = '\x1b[0m';
     var bright = '\x1b[1m';
